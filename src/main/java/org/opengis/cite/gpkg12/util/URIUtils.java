@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.logging.Level;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -95,10 +96,8 @@ public class URIUtils {
         Client client = Client.create();
         WebResource webRes = client.resource(uriRef);
         ClientResponse rsp = webRes.get(ClientResponse.class);
-        int lastIndexOfDot = uriRef.getPath().lastIndexOf('.');
-        // preserve suffix if possible
-        String suffix = (lastIndexOfDot > 0) ? uriRef.getPath().substring(lastIndexOfDot) : ".db";
-        File destFile = File.createTempFile("gpkg-", suffix);
+		String suffix = getSuffix(uriRef, rsp);
+		File destFile = File.createTempFile("gpkg-", suffix);
         if (rsp.hasEntity()) {
         	try (
                     InputStream is = rsp.getEntityInputStream();
@@ -116,7 +115,29 @@ public class URIUtils {
         return destFile;
     }
 
-    /**
+	private static String getSuffix(URI uriRef, ClientResponse rst) {
+		// HP nr 1, the URI reference is a file URI, check the suffix from the path
+		int lastIndexOfDot = uriRef.getPath().lastIndexOf('.');
+		if (lastIndexOfDot > 0)
+			return uriRef.getPath().substring(lastIndexOfDot);
+		// HP nr 2, the URI reference is a OGC service call, check the content disposition
+		List<String> headerValue = rst.getHeaders().get("Content-Disposition");
+		if (headerValue != null && !headerValue.isEmpty()) {
+            String contentDisposition = headerValue.get(0);
+			int indexOf = contentDisposition.indexOf("filename=");
+			if (indexOf > 0) {
+				String filename = contentDisposition.substring(indexOf + 9);
+				int lastIndexOf = filename.lastIndexOf('.');
+				if (lastIndexOf > 0) {
+					return filename.substring(lastIndexOf);
+				}
+			}
+		}
+		// fallback to ".db", which will make the file extension check fail
+		return ".db";
+	}
+
+	/**
      * Constructs an absolute URI from the given URI reference and a base URI.
      * 
      * @see <a href="http://tools.ietf.org/html/rfc3986#section-5.2">RFC 3986,

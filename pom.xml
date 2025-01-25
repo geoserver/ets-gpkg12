@@ -128,27 +128,8 @@
   </dependencies>
 
   <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.10.3</version>
-        <configuration>
-          <source>8</source>
-          <docfilessubdirs>true</docfilessubdirs>
-          <show>package</show>
-          <links>
-            <link>https://javadoc.jitpack.io/com/github/cbeust/testng/master/javadoc/</link>
-          </links>
-        </configuration>
-        <executions>
-          <execution>
-            <id>attach-javadocs</id>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
+   <plugins>
+      <!-- Javadoc plugin removed as it would not build -->		  
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
@@ -262,7 +243,7 @@
                 <build>
                   <dockerFileDir>${project.basedir}/src/docker</dockerFileDir>
                   <tags>
-                    <tag>${project.version}-teamengine-${docker.teamengine.version}</tag>
+                    <tag>${project.version}-teamengine-${docker.teamengine.version}-gs</tag>
                   </tags>
                   <assembly>
                     <inline>
