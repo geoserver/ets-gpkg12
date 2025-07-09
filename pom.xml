@@ -127,6 +127,36 @@
     </dependency>
   </dependencies>
 
+  <reporting>
+    <excludeDefaults>true</excludeDefaults>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <version>2.9</version>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>license</report>
+              <report>issue-tracking</report>
+              <report>scm</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.5.0</version>
+        <reportSets>
+          <reportSet>
+            <reports></reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+    </plugins>
+  </reporting>
+
   <build>
    <plugins>
       <!-- Javadoc plugin removed as it would not build -->		  
@@ -156,7 +186,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.22.0</version>
+        <version>3.1.2</version>
         <configuration>
           <forkCount>3</forkCount>
           <reuseForks>true</reuseForks>
@@ -165,6 +195,7 @@
       </plugin>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.14.0</version>
         <configuration>
           <source>1.8</source>
           <target>1.8</target>
@@ -172,6 +203,7 @@
       </plugin>
       <plugin>
         <artifactId>maven-jar-plugin</artifactId>
+        <version>3.3.0</version>
       </plugin>
       <plugin>
         <artifactId>maven-release-plugin</artifactId>
@@ -186,6 +218,41 @@
         <artifactId>maven-site-plugin</artifactId>
         <configuration>
           <skipDeploy>true</skipDeploy>
+        </configuration>
+        <executions>
+          <execution>
+            <id>site-package</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+            <configuration>
+              <generateReports>false</generateReports>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.5.0</version>
+        <configuration>
+          <source>8</source>
+          <target>8</target>
+          <doclint>none</doclint>
+          <failOnError>false</failOnError>
+          <failOnWarnings>false</failOnWarnings>
+          <offline>true</offline>
+          <nohelp>true</nohelp>
+          <detectOfflineLinks>false</detectOfflineLinks>
+          <additionalJOptions>
+            <additionalJOption>-J-Duser.language=en</additionalJOption>
+            <additionalJOption>-J-Duser.country=US</additionalJOption>
+            <additionalJOption>-Xdoclint:none</additionalJOption>
+          </additionalJOptions>
+          <additionalOptions>
+            <additionalOption>-Xdoclint:none</additionalOption>
+          </additionalOptions>
         </configuration>
       </plugin>
       <plugin>
@@ -235,7 +302,7 @@
         <plugin>
           <groupId>io.fabric8</groupId>
           <artifactId>docker-maven-plugin</artifactId>
-          <version>0.28.0</version>
+          <version>0.46.0</version>
           <configuration>
             <images>
               <image>
